@@ -63,31 +63,156 @@ This guide will walk you through deploying n8n (workflow automation tool) on Ora
 
 ### 2.2 Configure VM Instance
 
-**Name:**
+Follow these **exact settings** for Always Free tier:
+
+---
+
+#### **1. Name your instance**
+
 ```
 n8n-production
 ```
 
-**Placement:**
-- Leave as default (usually AD-1)
+(Or any name you prefer)
 
-**Image and Shape:**
+---
 
-1. Click **"Change Image"**
-   - Select **"Canonical Ubuntu"** (22.04 or 24.04)
-   - Click **"Select Image"**
+#### **2. Capacity type**
 
-2. Click **"Change Shape"**
-   - Click **"Ampere"** (ARM-based)
-   - Select **"VM.Standard.A1.Flex"**
-   - Set **OCPUs: 2** (or up to 4)
-   - Set **Memory: 12 GB** (or up to 24 GB)
-   - ✅ Shows "Always Free-eligible"
-   - Click **"Select Shape"**
+**Select:** `On-demand capacity`
 
-**Networking:**
-- Leave default VCN and subnet
-- Make sure **"Assign a public IPv4 address"** is checked
+**Options you'll see:**
+- ✅ **On-demand capacity** ← SELECT THIS
+- ❌ Preemptible capacity (cheaper but can be terminated)
+- ❌ Capacity reservation (for reserved resources)
+
+**Why On-demand?**
+- Guaranteed capacity
+- Always Free tier eligible
+- Won't be shut down unexpectedly
+
+---
+
+#### **3. Placement**
+
+**Availability domain:**
+- **Select:** `AD-1` (or any available AD in your region)
+- If AD-1 shows "Out of capacity", try AD-2 or AD-3
+
+**Fault domain:**
+- **Leave as:** `Let Oracle choose the fault domain`
+
+**Cluster placement group:**
+- **Leave UNCHECKED** ❌
+- This is for high-performance computing clusters (not needed for n8n)
+
+**Settings should look like:**
+```
+Availability domain: [Your-Region]-AD-1
+Fault domain: Let Oracle choose the fault domain
+Cluster placement group: [ ] Do not assign to a cluster placement group ← UNCHECKED
+```
+
+---
+
+#### **4. Image - Operating System**
+
+Click **"Change Image"** or **"Edit"**
+
+**Select Image Source:**
+- ✅ **Platform images** (default, already selected)
+
+**Operating System:**
+- ✅ **Canonical Ubuntu**
+
+**OS Version:**
+- **Select:** `22.04` or `24.04` (LTS versions)
+- **Recommended:** Ubuntu 24.04 (latest LTS)
+
+**Image Build:**
+- Leave as default (latest build date)
+
+**Settings should look like:**
+```
+Image: Canonical Ubuntu 24.04
+Image build: 2024.xx.xx (latest)
+```
+
+Click **"Select Image"**
+
+---
+
+#### **5. Shape - VM Size**
+
+Click **"Change Shape"** or **"Edit"**
+
+**Shape series:**
+- ❌ AMD (not Always Free)
+- ❌ Intel (not Always Free)
+- ✅ **Ampere** ← SELECT THIS (ARM-based, Always Free!)
+
+**Shape name:**
+- ✅ **VM.Standard.A1.Flex** ← SELECT THIS
+
+You should see: "Always Free-eligible shape" badge
+
+**Number of OCPUs:**
+- **Minimum:** 1
+- **Maximum:** 4 (for Always Free)
+- **Recommended:** 2 or 4
+  - For n8n with light usage: 2 OCPUs is fine
+  - For n8n with heavy AI processing: 4 OCPUs
+
+**Amount of memory (GB):**
+- **Minimum:** 1 GB
+- **Maximum:** 24 GB (for Always Free)
+- **Recommended:** 12 GB or 24 GB
+  - For light usage: 12 GB
+  - For heavy workflows + AI: 24 GB
+
+**My recommendation:**
+```
+OCPUs: 4
+Memory: 24 GB
+```
+This gives you maximum Always Free resources!
+
+**Settings should look like:**
+```
+Shape: VM.Standard.A1.Flex (Ampere)
+Number of OCPUs: 4
+Amount of memory (GB): 24
+Network bandwidth (Gbps): 4 (auto-assigned)
+Always Free eligible: Yes ✓
+```
+
+Click **"Select Shape"**
+
+---
+
+#### **6. Networking**
+
+**Primary VNIC information:**
+
+**Virtual cloud network:**
+- **Leave as:** Default VCN (auto-created)
+- Or select existing VCN if you have one
+
+**Subnet:**
+- **Leave as:** Default public subnet
+- **Make sure it says:** "Public Subnet" (not private)
+
+**Public IP address:**
+- ✅ **Assign a public IPv4 address** ← MUST BE CHECKED
+- This gives your VM a public IP for SSH and web access
+
+**Settings should look like:**
+```
+Virtual cloud network: vcn-[timestamp] (default)
+Subnet: subnet-[timestamp] (regional, public)
+☑ Assign a public IPv4 address ← CHECKED
+Use network security groups to control traffic: [ ] ← UNCHECKED (optional)
+```
 
 **Add SSH Keys:**
 
