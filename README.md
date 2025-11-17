@@ -57,13 +57,19 @@ Follow the comprehensive [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for step-by-
 ```
 soloble-n8n/
 ├── DEPLOYMENT_GUIDE.md          # Complete step-by-step guide
+├── BACKUP_GUIDE.md              # Backup strategies and Object Storage setup
 ├── docker-compose.yml            # Docker orchestration
 ├── .env.example                  # Environment configuration template
 ├── nginx/
 │   └── nginx.conf               # Nginx reverse proxy config
+├── database/
+│   ├── README.md                # Database usage guide
+│   ├── schema.sql               # PostgreSQL schema for users & emails
+│   └── setup-database.sh        # Database initialization script
 └── scripts/
     ├── install.sh               # Automated installation
-    ├── backup.sh                # Backup automation
+    ├── backup.sh                # Local backup automation
+    ├── backup-with-object-storage.sh  # Backup with Object Storage
     └── restore.sh               # Restore from backup
 ```
 
@@ -99,9 +105,47 @@ soloble-n8n/
 
 This is well within the Always Free tier capabilities!
 
+## Data Storage Options
+
+### Included: PostgreSQL Database
+
+The deployment includes PostgreSQL for storing:
+- **User data** (name, email, phone, etc.)
+- **Incoming emails** for AI processing
+- **AI processing results** and metadata
+- **Workflow execution data**
+
+**Ready-to-use database schema** for email automation:
+- `users` table - Contact information
+- `incoming_emails` table - Email content and AI results
+- `email_attachments` table - File attachment tracking
+- `ai_processing_queue` table - Queue management
+
+**Setup database:**
+```bash
+cd ~/soloble-n8n/database
+./setup-database.sh
+```
+
+See [database/README.md](database/README.md) for complete documentation.
+
+### Oracle Always Free Storage Options
+
+| Storage Type | Capacity | Best For | Setup |
+|--------------|----------|----------|-------|
+| **Block Storage** (included) | 200 GB | PostgreSQL, app data | ✅ Ready |
+| **Object Storage** (optional) | 20 GB | Email attachments, backups | 30 min setup |
+| **Autonomous Database** (optional) | 40 GB | Enterprise apps (overkill for most) | 60 min setup |
+
+**Recommendation:** Start with PostgreSQL (already included). Add Object Storage later if needed for large file attachments.
+
+See [BACKUP_GUIDE.md](BACKUP_GUIDE.md) for Object Storage setup.
+
 ## Documentation
 
 - **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Complete deployment guide (14 steps)
+- **[BACKUP_GUIDE.md](BACKUP_GUIDE.md)** - Backup strategies & Object Storage setup
+- **[database/README.md](database/README.md)** - Database schema & SQL examples
 - **[n8n Official Docs](https://docs.n8n.io/)** - Learn to build workflows
 - **[n8n Community](https://community.n8n.io/)** - Get help and share workflows
 - **[Workflow Templates](https://n8n.io/workflows/)** - Pre-built automation templates
