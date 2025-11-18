@@ -1,0 +1,36 @@
+# Environment files
+.env
+
+# Docker volumes and data
+n8n_data/
+postgres_data/
+letsencrypt/
+
+# Backups
+n8n-backups/
+*.tar.gz
+backup.log
+
+# Temporary files
+temp_backup/
+restore_temp/
+*.old
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# SSL certificates (if stored locally)
+*.pem
+*.crt
+*.key
